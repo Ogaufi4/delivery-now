@@ -1,0 +1,222 @@
+{
+  "project_info": {
+    "project_number": "1073460631405",
+    "project_id": "erestro",
+    "storage_bucket": "erestro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073460631405:android:14d4696e06ba24c44fac64",
+        "android_client_info": {
+          "package_name": "com.wrteam.erestro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073460631405-64dppetev15a28r227m1r61dgrlfk7mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestro",
+            "certificate_hash": "18015e766863d08a08d3784e53891c022b2db9ce"
+          }
+        },
+        {
+          "client_id": "1073460631405-g88csdq9ns4m7hpu9lf5aveovj6q46j6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestro",
+            "certificate_hash": "640b670efec854a896a3acb2b090f0601062d863"
+          }
+        },
+        {
+          "client_id": "1073460631405-qj56qbnjkk45vlig92p022i58mojgafv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestro",
+            "certificate_hash": "739619ee02e3a3069ce95883ce8ea9183052a194"
+          }
+        },
+        {
+          "client_id": "1073460631405-vu3ohf3r2tav8daro9k6pj040io3sdsr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestro",
+            "certificate_hash": "0b3166ccb5193531a80a1a0c949d44cce5350ae7"
+          }
+        },
+        {
+          "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "PLACE_YOUR_ANDROID_API_KEY_HERE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1073460631405-gd91ub0abuh09f12o1sdvisdhc0ivvln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wrteam.erestrorider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073460631405:android:7462043b8851fb604fac64",
+        "android_client_info": {
+          "package_name": "com.wrteam.erestropartner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073460631405-11ghloretur6nep53elj5cp36qo7n3bo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestropartner",
+            "certificate_hash": "a826f9b925d7e3406357402677fa3d781efb4994"
+          }
+        },
+        {
+          "client_id": "1073460631405-1kc324d0f5rlqnejsso970g8hgjvg0b9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestropartner",
+            "certificate_hash": "9516f56426ae494e6ba315a4f216e4dc6a9061d8"
+          }
+        },
+        {
+          "client_id": "1073460631405-l95a59fnbbe2kunkhijpm99qvjg7ak92.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestropartner",
+            "certificate_hash": "d36c9618046485bd7933bd7d012dbe06fd1001a5"
+          }
+        },
+        {
+          "client_id": "1073460631405-vt9tgjbvq4nbq7od8a8s7vb66de3coqm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestropartner",
+            "certificate_hash": "0b3166ccb5193531a80a1a0c949d44cce5350ae7"
+          }
+        },
+        {
+          "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "PLACE_YOUR_ANDROID_API_KEY_HERE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1073460631405-gd91ub0abuh09f12o1sdvisdhc0ivvln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wrteam.erestrorider"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073460631405:android:f4810d5a1323653c4fac64",
+        "android_client_info": {
+          "package_name": "com.wrteam.erestrorider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073460631405-1drk004o0ev5n8sqa9jup31ofnq0sq2j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestrorider",
+            "certificate_hash": "14a44c0fd818e5e87e7f68dd2ccb90bfaf609845"
+          }
+        },
+        {
+          "client_id": "1073460631405-5tv6mmu875ko21h04o6p2q3hpg68sddo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestrorider",
+            "certificate_hash": "640b670efec854a896a3acb2b090f0601062d863"
+          }
+        },
+        {
+          "client_id": "1073460631405-cbtbus87vchca0sqbgikouili5prstp7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestrorider",
+            "certificate_hash": "16feb339bca63a01af71842a45a5475dfa5311a8"
+          }
+        },
+        {
+          "client_id": "1073460631405-lfncecfo166h7etjkeg5pn4pl81n9v5t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestrorider",
+            "certificate_hash": "6d819f0c51f3a714f3baa846139ce68f869b9bb7"
+          }
+        },
+        {
+          "client_id": "1073460631405-man8aicjuqnu9rl1706uqeqrknlig5lj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrteam.erestrorider",
+            "certificate_hash": "0b3166ccb5193531a80a1a0c949d44cce5350ae7"
+          }
+        },
+        {
+          "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "PLACE_YOUR_ANDROID_API_KEY_HERE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073460631405-18dnklnd9m7nic8geafvgfdt84v4h4td.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1073460631405-gd91ub0abuh09f12o1sdvisdhc0ivvln.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wrteam.erestrorider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

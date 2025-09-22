@@ -1,0 +1,5 @@
+{
+  "dart.flutterSdkPath": ".fvm/versions/3.29.3",
+  "files.autoSave": "afterDelay",
+  "dart.flutterHotReloadOnSave": "all",
+}

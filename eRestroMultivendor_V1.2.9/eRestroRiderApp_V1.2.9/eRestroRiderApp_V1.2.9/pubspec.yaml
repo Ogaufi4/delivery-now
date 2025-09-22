@@ -1,0 +1,73 @@
+name: project
+description: A new Flutter project.
+ 
+
+publish_to: 'none'
+
+
+version: 1.1.14+15
+
+environment:
+  sdk: ">=2.16.1 <3.0.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.4
+  http: ^1.3.0
+  shared_preferences: ^2.0.13
+  connectivity_plus: ^6.0.5
+  shimmer: ^3.0.0
+  jaguar_jwt: ^3.0.0
+  country_code_picker: ^3.0.0
+  firebase_messaging: ^15.1.1
+  flutter_local_notifications: ^19.1.0
+  path_provider: ^2.0.9
+  sms_autofill: ^2.2.0
+  firebase_auth: ^5.2.1
+  url_launcher: ^6.0.20
+  json_table: ^2.0.1
+  flutter_html: ^3.0.0-alpha.6
+  flutter_svg: ^2.0.5
+  google_maps_flutter: ^2.1.2
+  geolocator: ^14.0.0
+  flutter_localizations:
+    sdk: flutter
+  file_picker: ^10.1.2
+  image_cropper: ^9.0.0
+  image_pixels: ^4.0.2
+  flutter_exif_rotation: ^0.5.1
+  open_filex: ^4.3.1
+  image_picker: ^1.0.4
+
+dependency_overrides:
+  modal_bottom_sheet: ^3.0.0-pre
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/images/png/
+    - assets/images/svg/
+    - lib/Language/
+
+  fonts:
+    - family: quicksand
+      fonts:
+        - asset: assets/font/Quicksand-Regular.ttf
+        - asset: assets/font/Quicksand-Bold.ttf
+          weight: 700
+        - asset: assets/font/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/font/Quicksand-Medium.ttf
+          weight: 500
