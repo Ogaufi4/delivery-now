@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "405659381663",
+    "project_id": "ekonnect-272da",
+    "storage_bucket": "ekonnect-272da.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:3c7ba426a52ff8420b57aa",
+        "android_client_info": {
+          "package_name": "com.eKonnect.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:337afcebaf209ede0b57aa",
+        "android_client_info": {
+          "package_name": "com.konnect.erestro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:832d7994cfbd8ebf0b57aa",
+        "android_client_info": {
+          "package_name": "com.ekonnect.erestrorider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

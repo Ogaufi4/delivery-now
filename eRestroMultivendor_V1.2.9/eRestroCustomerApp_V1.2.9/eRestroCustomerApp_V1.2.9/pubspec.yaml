@@ -1,0 +1,135 @@
+name: project
+description: A new Flutter project.
+
+publish_to: 'none'
+
+
+version: 1.2.17+38
+
+environment:
+  sdk: ">=3.7.2 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter 
+
+  cupertino_icons: ^1.0.2
+  cached_network_image: ^3.1.0+1
+  
+  flutter_svg: ^2.0.2
+  shared_preferences: ^2.0.9
+  google_maps_flutter: ^2.1.1
+  url_launcher: ^6.0.16
+  image: ^4.0.15
+  #firebaselogin
+  firebase_auth: ^5.1.2
+  firebase_core: ^3.2.0
+  firebase_messaging: ^15.0.3
+  google_sign_in: ^6.0.2
+  flutter_login_facebook: ^2.0.0
+  #apple_sign_in_safety: ^0.0.6
+  sign_in_with_apple: ^7.0.1
+  flutter_html: ^3.0.0-alpha.3
+  flutter_local_notifications: ^18.0.1
+  image_cropper: ^9.1.0
+  external_path: ^2.0.1
+  #google places
+  rxdart: ^0.27.4
+  google_api_headers: 4.4.5
+  geolocator: 
+  geocoding:
+  location:
+  location_geocoder:
+  flutter_bloc: ^9.1.0
+  hive_flutter: ^1.0.0
+  hive: ^2.0.4
+  image_picker: ^1.0.4
+  internet_connection_checker: ^1.0.0+1
+  google_maps_webservice: ^0.0.20-nullsafety.0
+  intl_phone_field: ^3.1.0
+  #launch_review: 
+    #git:
+     # url: https://github.com/Purus/launch_review.git
+  in_app_review: ^2.0.4
+  #otp_autofill: ^4.1.0
+  sms_autofill: ^2.2.0
+  path_provider: ^2.0.2
+  pin_code_fields: ^8.0.1
+  webview_flutter: ^4.0.6
+  connectivity_plus: ^6.0.5
+  google_fonts: ^4.0.3
+  pin_input_text_field: ^4.1.1
+  permission_handler: ^12.0.0+1
+  provider: ^6.0.2
+  carousel_slider: ^5.0.0
+  share_plus: ^11.0.0
+  flutter_exif_rotation: ^0.5.1
+  mime_type: ^1.0.0
+  shimmer: ^3.0.0
+  flutter_rating_bar: ^4.0.0
+  flutter_stripe: ^11.0.0
+  paytmpayments_allinonesdk: ^1.0.3
+  razorpay_flutter: ^1.2.7
+  flutter_paystack: ^1.0.7
+  flutter_html_to_pdf:
+    git:
+      url: https://github.com/mohammadhprp/flutter_html_to_pdf2
+  open_filex: ^4.3.1
+  flutter_downloader: ^1.7.1
+  file_picker: ^10.1.2
+  google_places_flutter: ^2.0.5
+  speech_to_text: ^7.0.0
+  path_drawing: ^1.0.1
+  webview_flutter_android: ^4.3.2
+  webview_flutter_wkwebview: ^3.2.0
+  image_pixels: ^4.0.2
+  lottie: ^2.3.2
+  easy_stepper: ^0.8.2  
+  phonepe_payment_sdk: ^3.0.0
+  equatable: ^2.0.7
+
+dependency_overrides:
+  intl: ^0.18.0
+  #stripe_android: 9.5.0+1
+  stripe_android: ^11.5.0
+  package_info_plus: ^8.3.0
+  http:
+  flutter_paystack:
+    git:
+      url: https://github.com/I-driod/flutter_paystack.git
+      ref: master
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+
+flutter:
+
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/images/svg/
+    - assets/images/png/
+    - assets/images/jpg/
+    - assets/eRestro.db
+    - assets/images/json/
+    - assets/languages/
+  fonts:
+    - family: Quicksand
+      fonts:
+        - asset: assets/font/Quicksand-Regular.ttf
+        - asset: assets/font/Quicksand-Bold.ttf
+          weight: 700
+        - asset: assets/font/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/font/Quicksand-Medium.ttf
+          weight: 500

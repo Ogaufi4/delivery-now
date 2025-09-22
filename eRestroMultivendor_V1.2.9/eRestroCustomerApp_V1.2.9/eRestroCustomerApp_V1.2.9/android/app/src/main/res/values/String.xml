@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">eKonnect</string>
+    <string name="default_notification_channel_id"> com.konnect.erestro</string>
+    <string name="facebook_app_id">1273005814146479</string>
+    <string name="fb_login_protocol_scheme">fb808676393656672</string>
+    <string name="facebook_client_token">5c764445b603381121196637859e1b49</string>
+
+</resources>
