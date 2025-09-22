@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "405659381663",
+    "project_id": "ekonnect-272da",
+    "storage_bucket": "ekonnect-272da.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:3c7ba426a52ff8420b57aa",
+        "android_client_info": {
+          "package_name": "com.eKonnect.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "405659381663-st7ai3suhpaktm0l2js0d0ad6l111fim.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.konnect.erestro"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:337afcebaf209ede0b57aa",
+        "android_client_info": {
+          "package_name": "com.konnect.erestro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405659381663-h0pd3jbb27jkivh8n8qjen2ra5ebos47.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.konnect.erestro",
+            "certificate_hash": "5b694e552a6ff66fd77ebd4d04fb65edfe0519c6"
+          }
+        },
+        {
+          "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "405659381663-st7ai3suhpaktm0l2js0d0ad6l111fim.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.konnect.erestro"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405659381663:android:d556fc83912b3fbf0b57aa",
+        "android_client_info": {
+          "package_name": "com.konnect.erestropartner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaalGPhWlii-68QnWbliKlXrmXwuhjpqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405659381663-vaaicr4oo1p5vnnv6ungan2rfvjakkbg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "405659381663-st7ai3suhpaktm0l2js0d0ad6l111fim.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.konnect.erestro"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

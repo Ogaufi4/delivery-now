@@ -1,0 +1,81 @@
+name: project
+description: A new Flutter project.
+
+publish_to: 'none' 
+
+version: 1.1.1+17
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.4
+  flutter_svg: ^2.0.1
+  http: ^1.2.0
+  jaguar_jwt: ^3.0.0
+  shared_preferences: ^2.0.15
+  connectivity_plus: ^6.0.5
+  firebase_auth: ^5.1.4
+  cached_network_image: ^3.2.0
+  firebase_core: ^3.3.0
+  country_code_picker: ^3.0.0
+  flutter_localizations:
+    sdk: flutter
+  shimmer: ^3.0.0
+  url_launcher: ^6.1.2
+  sms_autofill: ^2.2.0
+  image_picker: ^1.0.8
+  fl_chart: ^0.71.0 
+  file_picker: ^8.0.7
+  flutter_local_notifications: ^19.1.0
+  firebase_messaging: ^15.0.4
+  sticky_headers: ^0.3.0+2
+  flutter_html: ^3.0.0-alpha.6
+  html_editor_enhanced: ^2.4.0+1  
+  google_maps_flutter: ^2.1.5
+  geocoding: ^3.0.0
+  mime: ^2.0.0
+  flutter_html_to_pdf: ^0.7.0
+  permission_handler: ^12.0.0+1
+  open_filex: ^4.3.2
+  geolocator: ^14.0.0
+  external_path: ^2.0.1
+  path_drawing: ^1.0.1
+
+dependency_overrides:
+  modal_bottom_sheet: ^3.0.0-pre
+  intl: ^0.18.0
+  flutter_html_to_pdf:
+    git:
+      url: https://github.com/mohammadhprp/flutter_html_to_pdf2
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/svg/
+    - assets/images/png/
+    - lib/Language/
+    
+
+  fonts:
+    - family: Quicksand
+      fonts:
+        - asset: assets/font/Quicksand-Regular.ttf
+        - asset: assets/font/Quicksand-Bold.ttf
+          weight: 700
+        - asset: assets/font/Quicksand-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/Quicksand-Light.ttf
+          weight: 300
+        - asset: assets/font/Quicksand-Medium.ttf
+          weight: 500
