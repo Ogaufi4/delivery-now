@@ -311,14 +311,18 @@ String? validateUserName(String? value, BuildContext context) {
 }
 
 String? validateMob(String? value, BuildContext context) {
-  if (value!.isEmpty) {
+  if (value == null || value.isEmpty) {
     return getTranslated(context, 'MOB_REQUIRED');
   }
-  if (value.length < 9) {
+
+  if (value.length != 8) {
     return getTranslated(context, 'VALID_MOB');
   }
+
+  // If the validation passes, return null
   return null;
 }
+
 
 String? validatePass(String? value, BuildContext context) {
   RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~_.?=^`-]).{8,}$');

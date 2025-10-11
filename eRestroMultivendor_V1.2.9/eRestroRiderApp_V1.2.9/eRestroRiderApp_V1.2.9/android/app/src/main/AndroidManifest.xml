@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.wrteam.erestrorider">
+    package="com.konnect.erestrorider">
 
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -31,7 +31,7 @@
 
 
     <application
-        android:label="eRestro Rider App"
+        android:label="ekonnect Rider App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

@@ -400,14 +400,14 @@
 				FLUTTER_BUILD_NAME = 1.1.8;
 				FLUTTER_BUILD_NUMBER = 18;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "eRestro Rider";
+				INFOPLIST_KEY_CFBundleDisplayName = "ekonnect Rider";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wrteam.erestrorider;
+				PRODUCT_BUNDLE_IDENTIFIER = com.konnect.erestrorider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -538,14 +538,14 @@
 				FLUTTER_BUILD_NAME = 1.1.8;
 				FLUTTER_BUILD_NUMBER = 18;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "eRestro Rider";
+				INFOPLIST_KEY_CFBundleDisplayName = "ekonnect Rider";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wrteam.erestrorider;
+				PRODUCT_BUNDLE_IDENTIFIER = com.konnect.erestrorider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -570,14 +570,14 @@
 				FLUTTER_BUILD_NAME = 1.1.8;
 				FLUTTER_BUILD_NUMBER = 18;
 				INFOPLIST_FILE = Runner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "eRestro Rider";
+				INFOPLIST_KEY_CFBundleDisplayName = "ekonnect Rider";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.8;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wrteam.erestrorider;
+				PRODUCT_BUNDLE_IDENTIFIER = com.konnect.erestrorider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

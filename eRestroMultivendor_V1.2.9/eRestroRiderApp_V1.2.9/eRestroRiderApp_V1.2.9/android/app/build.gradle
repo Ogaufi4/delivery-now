@@ -24,7 +24,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 35
-        namespace "com.wrteam.erestrorider"
+        namespace "com.konnect.erestrorider"
 
 
     compileOptions {
@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.wrteam.erestrorider"
+        applicationId "com.konnect.erestrorider"
         minSdkVersion 23
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()

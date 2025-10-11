@@ -1,4 +1,4 @@
-package com.wrteam.erestrorider
+package com.konnect.erestrorider
 
 import io.flutter.embedding.android.FlutterActivity
 import android.content.ContentResolver

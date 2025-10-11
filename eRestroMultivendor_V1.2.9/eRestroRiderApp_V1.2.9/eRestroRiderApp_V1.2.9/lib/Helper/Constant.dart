@@ -1,11 +1,11 @@
-const String appName = 'eRestro Rider App';
+const String appName = 'ekonnect Rider App';
 
-const String baseUrl = 'https://erestro.me/rider/app/v1/api/'; //demo URL
+const String baseUrl = 'https://flowbasetech.co.bw/konnect/rider/app/v1/api/'; //demo URL
 
-const String AND_GOOGLE_API_KEY = "PLACE_YOUR_ANDROID_API_KEY_HERE";
-const String IOS_GOOGLE_API_KEY = "PLACE_YOUR_IOS_API_KEY_HERE";
+const String AND_GOOGLE_API_KEY = "AIzaSyDcu33j0cX-ywEHZntUev4fXQjAplcceYM";
+const String IOS_GOOGLE_API_KEY = "AIzaSyDcu33j0cX-ywEHZntUev4fXQjAplcceYM";
 
-const String country_code_val = 'IN';
+const String country_code_val = 'BW';
 
 const int timeOut = 50;
 const int perPage = 10;
