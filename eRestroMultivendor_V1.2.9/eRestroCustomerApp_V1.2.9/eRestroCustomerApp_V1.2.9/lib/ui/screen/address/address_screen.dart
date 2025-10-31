@@ -1,26 +1,24 @@
 import 'dart:async';
 import 'dart:io';
-//import 'dart:math';
+import 'dart:math';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/gestures.dart';
 import 'package:project/app/routes.dart';
 import 'package:project/cubit/address/getLocationDetailCubit.dart';
 import 'package:project/cubit/address/searchLocationCubit.dart';
 import 'package:project/cubit/address/updateAddressCubit.dart';
-import 'package:project/cubit/address/addAddressCubit.dart';
-import 'package:project/cubit/address/addressCubit.dart';
-import 'package:project/cubit/auth/authCubit.dart';
 import 'package:project/cubit/settings/settingsCubit.dart';
 import 'package:project/cubit/systemConfig/systemConfigCubit.dart';
 import 'package:project/data/model/addressModel.dart';
 import 'package:project/data/repositories/address/addressRepository.dart';
+import 'package:project/cubit/address/addAddressCubit.dart';
+import 'package:project/cubit/address/addressCubit.dart';
+import 'package:project/cubit/auth/authCubit.dart';
 import 'package:project/ui/screen/home/home_screen.dart';
 import 'package:project/ui/styles/design.dart';
-import 'package:project/ui/styles/color.dart';
 import 'package:project/ui/widgets/buttomContainer.dart';
 import 'package:project/ui/widgets/keyboardOverlay.dart';
 import 'package:project/ui/widgets/pinAnimation.dart';
-//import 'package:project/ui/widgets/simmer/mapLoadSimmer.dart';
+import 'package:project/ui/widgets/simmer/mapLoadSimmer.dart';
 import 'package:project/utils/apiBodyParameterLabels.dart';
 import 'package:project/utils/constants.dart';
 import 'package:project/utils/labelKeys.dart';
@@ -31,12 +29,14 @@ import 'package:project/utils/internetConnectivity.dart';
 import 'package:project/utils/uiUtils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:project/ui/styles/color.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'dart:ui' as ui;
 import 'package:location_geocoder/location_geocoder.dart';
@@ -44,7 +44,8 @@ import 'package:location_geocoder/location_geocoder.dart';
 class AddressScreen extends StatefulWidget {
   final AddressModel? addressModel;
   final String? from;
-  const AddressScreen({Key? key, this.addressModel, this.from}) : super(key: key);
+  const AddressScreen({Key? key, this.addressModel, this.from})
+      : super(key: key);
 
   @override
   _AddressScreenState createState() => _AddressScreenState();
@@ -79,226 +80,311 @@ class _AddressScreenState extends State<AddressScreen> {
   double? width, height;
   String? locationStatus = officeKey;
   late Position position;
-  TextEditingController areaRoadApartmentNameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController alternateMobileNumberController = TextEditingController();
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController landmarkController = TextEditingController();
-  TextEditingController cityController = TextEditingController();
-  TextEditingController pinCodeController = TextEditingController();
+  TextEditingController areaRoadApartmentNameController =
+  TextEditingController(text: "");
+  TextEditingController addressController = TextEditingController(text: "");
+  // Removed: alternateMobileNumberController
+  TextEditingController phoneNumberController = TextEditingController(text: "");
+  // Removed: landmarkController
+  TextEditingController cityController = TextEditingController(text: "");
+  // Removed: pinCodeController
   Timer? _debounce;
-  TextEditingController locationSearchController = TextEditingController();
+  TextEditingController locationSearchController = TextEditingController(text: "");
   String? states, country, pincode, latitude, longitude, address, city, area;
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
-  String? countryCode = defaulCountryCode, alternetNumbercountryCode = defaulCountryCode;
+  String? checkStatusFirstTime = "1";
+  bool markerMove = false;
+  String? countryCode = defaulCountryCode;
+  // Removed: alternetNumbercountryCode
   FocusNode numberFocusNode = FocusNode();
   FocusNode numberFocusNodeAndroid = FocusNode();
-  FocusNode alternetNumberFocusNode = FocusNode();
-  FocusNode alternetNumberFocusNodeAndroid = FocusNode();
+  // Removed focus nodes for alternate number
   late LocatitonGeocoder geocoder;
+
+  locationEnableDialog() async {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return LocationDialog(width: width, height: height);
+      },
+    );
+  }
+
+  defaultLocation() async {
+    final placemarks = await geocoder.findAddressesFromCoordinates(
+      Coordinates(latlong!.latitude, latlong!.longitude),
+    );
+    setState(() {
+      latlong = LatLng(
+        double.parse(context.read<SettingsCubit>().getSettings().latitude),
+        double.parse(context.read<SettingsCubit>().getSettings().longitude),
+      );
+      _cameraPosition = CameraPosition(
+        target: latlong!,
+        zoom: 14.4746,
+        bearing: 0,
+      );
+      if (_controller != null) {
+        _controller!.animateCamera(
+          CameraUpdate.newCameraPosition(_cameraPosition),
+        );
+      }
+      states = placemarks.first.adminArea ?? "";
+      country = placemarks.first.countryName ?? "";
+      pincode = placemarks.first.postalCode ?? "";
+      latitude = position.latitude.toString();
+      longitude = position.longitude.toString();
+      if (areaRoadApartmentNameController.text.trim().isEmpty) {
+        areaRoadApartmentNameController.text =
+            placemarks.first.subLocality ?? "";
+        areaRoadApartmentNameController.selection = TextSelection.fromPosition(
+          TextPosition(offset: areaRoadApartmentNameController.text.length),
+        );
+      }
+      if (cityController.text.trim().isEmpty) {
+        cityController.text =
+            placemarks.first.locality ?? placemarks.first.subAdminArea!;
+        cityController.selection = TextSelection.fromPosition(
+          TextPosition(offset: cityController.text.length),
+        );
+      }
+      address = placemarks.first.addressLine ?? "";
+      addressController = TextEditingController(
+        text: placemarks.first.addressLine.toString(),
+      );
+      city = placemarks.first.locality ?? placemarks.first.subAdminArea!;
+      print(
+        "states:$states,country:$country,pincode:$pincode,latitude:$latitude,longitude:${longitude}city:$city",
+      );
+      locationController.text = placemarks.first.addressLine.toString();
+      _markers.add(
+        Marker(
+          markerId: const MarkerId("Marker"),
+          position: LatLng(position.latitude, position.longitude),
+        ),
+      );
+    });
+  }
+
+  getUserLocation() async {
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openLocationSettings();
+      if (Platform.isAndroid) {
+        getUserLocation();
+      }
+    } else if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        defaultLocation();
+        locationEnableDialog();
+      } else {
+        getUserLocation();
+      }
+    } else {
+      try {
+        final LocationSettings locationSettings = LocationSettings(
+          accuracy: LocationAccuracy.high,
+        );
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: locationSettings,
+        );
+        final placemarks = await geocoder.findAddressesFromCoordinates(
+          Coordinates(position.latitude, position.longitude),
+        );
+        if (mounted) {
+          if (widget.from == "updateAddress") {
+            setState(() {
+              latlong = LatLng(
+                double.parse(widget.addressModel!.latitude!),
+                double.parse(widget.addressModel!.longitude!),
+              );
+              _cameraPosition = CameraPosition(
+                target: latlong!,
+                zoom: 14.4746,
+                bearing: 0,
+              );
+              if (_controller != null) {
+                _controller!.animateCamera(
+                  CameraUpdate.newCameraPosition(_cameraPosition),
+                );
+              }
+              states = widget.addressModel!.state!;
+              country = widget.addressModel!.country!;
+              pincode = widget.addressModel!.pincode!;
+              latitude = widget.addressModel!.latitude!.toString();
+              longitude = widget.addressModel!.longitude!.toString();
+              area = widget.addressModel!.area!;
+              areaRoadApartmentNameController.text = widget.addressModel!.area!;
+              cityController.text = widget.addressModel!.city!;
+              addressController = TextEditingController(
+                text: widget.addressModel!.address.toString(),
+              );
+              if (areaRoadApartmentNameController.text.trim().isEmpty) {
+                areaRoadApartmentNameController.text =
+                widget.addressModel!.area!;
+              }
+              if (cityController.text.trim().isEmpty) {
+                cityController.text = widget.addressModel!.city!;
+              }
+              address = widget.addressModel!.address!;
+              city = widget.addressModel!.city!;
+              locationController.text =
+              "${widget.addressModel!.address!},${widget.addressModel!.area!},${widget.addressModel!.city},${widget.addressModel!.state!},${widget.addressModel!.pincode!}";
+              _markers.add(
+                Marker(
+                  markerId: const MarkerId("Marker"),
+                  position: LatLng(
+                    double.parse(widget.addressModel!.latitude!),
+                    double.parse(widget.addressModel!.longitude!),
+                  ),
+                ),
+              );
+            });
+          } else {
+            setState(() {
+              latlong = LatLng(position.latitude, position.longitude);
+              _cameraPosition = CameraPosition(
+                target: latlong!,
+                zoom: 14.4746,
+                bearing: 0,
+              );
+              if (_controller != null) {
+                _controller!.animateCamera(
+                  CameraUpdate.newCameraPosition(_cameraPosition),
+                );
+              }
+              states = placemarks.first.adminArea ?? "";
+              country = placemarks.first.countryName ?? "";
+              pincode = placemarks.first.postalCode ?? "";
+              latitude = position.latitude.toString();
+              longitude = position.longitude.toString();
+              if (areaRoadApartmentNameController.text.trim().isEmpty) {
+                areaRoadApartmentNameController.text =
+                    placemarks.first.subLocality ?? "";
+              }
+              if (cityController.text.trim().isEmpty) {
+                cityController.text =
+                    placemarks.first.locality ?? placemarks.first.subAdminArea!;
+              }
+              address = placemarks.first.addressLine ?? "";
+              addressController = TextEditingController(
+                text: placemarks.first.addressLine.toString(),
+              );
+              city = placemarks.first.locality ?? placemarks.first.subAdminArea!;
+              locationController.text = placemarks.first.addressLine.toString();
+              _markers.add(
+                Marker(
+                  markerId: const MarkerId("Marker"),
+                  position: LatLng(position.latitude, position.longitude),
+                ),
+              );
+            });
+          }
+        }
+      } catch (e) {
+        getUserLocation();
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    // Initialize default location
-    latlong = LatLng(double.parse(defaultLatitude), double.parse(defaultLongitude));
-    _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746);
-
-    // Initialize connectivity
     CheckInternet.initConnectivity().then((List<ConnectivityResult> results) {
-      if (mounted) {
+      if (results.isNotEmpty) {
         setState(() {
-          _connectionStatus = results.isNotEmpty ? results : [ConnectivityResult.none];
+          _connectionStatus = results;
         });
       }
     });
-
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
-      if (mounted && results.isNotEmpty) {
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen((
+        List<ConnectivityResult> results,
+        ) {
+      if (results.isNotEmpty) {
         CheckInternet.updateConnectionStatus(results).then((value) {
-          if (mounted) {
-            setState(() {
-              _connectionStatus = value;
-            });
-          }
+          setState(() {
+            _connectionStatus = value;
+          });
         });
       }
     });
-
-    // Initialize geocoder
-    try {
-      geocoder = LocatitonGeocoder(decodeBase64(context.read<SystemConfigCubit>().appReference()));
-    } catch (e) {
-      UiUtils.setSnackBar("Error", "Failed to initialize geocoder: $e", context, false, type: "2");
-    }
-
-    // Initialize controllers and location
+    geocoder = LocatitonGeocoder(
+      decodeBase64(context.read<SystemConfigCubit>().appReference()),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cityController.clear();
-      if (widget.from == "updateAddress" && widget.addressModel != null) {
-        locationStatus = widget.addressModel!.type;
-        alternateMobileNumberController.text = widget.addressModel!.alternateMobile ?? "";
-        phoneNumberController.text = widget.addressModel!.mobile ?? "";
-        countryCode = widget.addressModel!.countryCode;
-        areaRoadApartmentNameController.text = widget.addressModel!.area ?? "";
-        addressController.text = widget.addressModel!.address ?? "";
-        cityController.text = widget.addressModel!.city ?? "";
-        landmarkController.text = widget.addressModel!.landmark ?? "";
-        pinCodeController.text = widget.addressModel!.pincode ?? "";
-      } else {
-        phoneNumberController.text = context.read<AuthCubit>().getMobile();
-        if (context.read<SettingsCubit>().state.settingsModel!.latitude.isNotEmpty &&
-            context.read<SettingsCubit>().state.settingsModel!.longitude.isNotEmpty) {
-          latlong = LatLng(
+    });
+    _cameraPosition = const CameraPosition(target: LatLng(0, 0), zoom: 14.4746);
+    getUserLocation();
+    if (widget.from == "updateAddress") {
+      locationStatus = widget.addressModel!.type!;
+      // Removed: alternateMobileNumberController
+      phoneNumberController = TextEditingController(
+        text: widget.addressModel!.mobile,
+      );
+      countryCode = widget.addressModel!.countryCode;
+      areaRoadApartmentNameController = TextEditingController(
+        text: widget.addressModel!.area!,
+      );
+      addressController = TextEditingController(
+        text: widget.addressModel!.address!,
+      );
+      cityController = TextEditingController(text: widget.addressModel!.city!);
+      // Removed: landmarkController & pinCodeController
+    } else {
+      if (context.read<SettingsCubit>().state.settingsModel!.latitude != "" &&
+          context.read<SettingsCubit>().state.settingsModel!.longitude != "") {
+        latlong = LatLng(
+          double.parse(context.read<SettingsCubit>().state.settingsModel!.latitude),
+          double.parse(context.read<SettingsCubit>().state.settingsModel!.longitude),
+        );
+        _cameraPosition = CameraPosition(
+          target: LatLng(
             double.parse(context.read<SettingsCubit>().state.settingsModel!.latitude),
             double.parse(context.read<SettingsCubit>().state.settingsModel!.longitude),
-          );
-          _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746);
-          city = context.read<SettingsCubit>().state.settingsModel!.city;
-          addressController.text = context.read<SettingsCubit>().state.settingsModel!.address;
-        }
+          ),
+          zoom: 14.4746,
+        );
+        city = context.read<SettingsCubit>().state.settingsModel!.city;
+        addressController.text =
+            context.read<SettingsCubit>().state.settingsModel!.address;
+      } else {
+        latlong = LatLng(
+          double.parse(defaultLatitude),
+          double.parse(defaultLongitude),
+        );
+        _cameraPosition = CameraPosition(
+          target: LatLng(
+            double.parse(defaultLatitude),
+            double.parse(defaultLongitude),
+          ),
+          zoom: 14.4746,
+        );
+        city = defaultCity;
+        addressController.text = defaultAddress;
       }
-      getUserLocation();
-    });
-
-    // Focus listeners for keyboard overlay
+      phoneNumberController = TextEditingController(
+        text: context.read<AuthCubit>().getMobile(),
+      );
+    }
     numberFocusNode.addListener(() {
-      if (numberFocusNode.hasFocus) {
+      bool hasFocus = numberFocusNode.hasFocus;
+      if (hasFocus) {
         KeyboardOverlay.showOverlay(context);
       } else {
         KeyboardOverlay.removeOverlay();
       }
     });
-    alternetNumberFocusNode.addListener(() {
-      if (alternetNumberFocusNode.hasFocus) {
-        KeyboardOverlay.showOverlay(context);
-      } else {
-        KeyboardOverlay.removeOverlay();
-      }
-    });
-
     loadSearchAddressData();
   }
 
-  Future<void> updateLocationFromCoordinates(LatLng coordinates) async {
-    try {
-      final placemarks = await geocoder.findAddressesFromCoordinates(Coordinates(coordinates.latitude, coordinates.longitude));
-      if (mounted) {
-        setState(() {
-          states = placemarks.first.adminArea ?? "";
-          country = placemarks.first.countryName ?? "";
-          pincode = placemarks.first.postalCode ?? "";
-          latitude = coordinates.latitude.toString();
-          longitude = coordinates.longitude.toString();
-          area = placemarks.first.subLocality ?? "";
-          areaRoadApartmentNameController.text = placemarks.first.subLocality ?? "";
-          address = placemarks.first.addressLine ?? "";
-          addressController.text = placemarks.first.addressLine.toString();
-          city = placemarks.first.locality ?? placemarks.first.subAdminArea!;
-          cityController.text = placemarks.first.locality ?? placemarks.first.subAdminArea!;
-          locationController.text = placemarks.first.addressLine.toString();
-          _markers.clear();
-          _markers.add(Marker(
-            markerId: const MarkerId("Marker"),
-            position: coordinates,
-          ));
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        UiUtils.setSnackBar("Location", "Failed to fetch address: $e", context, false, type: "2");
-      }
-    }
-  }
-
-  Future<void> getUserLocation() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openLocationSettings();
-      if (Platform.isAndroid) {
-        UiUtils.setSnackBar("Location", "Please enable location services in settings", context, false, type: "2");
-        await defaultLocation();
-        return;
-      }
-    } else if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-        await defaultLocation();
-        showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) => LocationDialog(width: width, height: height),
-        );
-        return;
-      }
-    }
-
-    try {
-      final LocationSettings locationSettings = const LocationSettings(accuracy: LocationAccuracy.high);
-      position = await Geolocator.getCurrentPosition(locationSettings: locationSettings);
-      if (mounted) {
-        if (widget.from == "updateAddress" && widget.addressModel != null) {
-          setState(() {
-            latlong = LatLng(
-              double.parse(widget.addressModel!.latitude!),
-              double.parse(widget.addressModel!.longitude!),
-            );
-            _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746);
-            if (_controller != null) {
-              _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
-            }
-            states = widget.addressModel!.state;
-            country = widget.addressModel!.country;
-            pincode = widget.addressModel!.pincode;
-            latitude = widget.addressModel!.latitude;
-            longitude = widget.addressModel!.longitude;
-            area = widget.addressModel!.area;
-            areaRoadApartmentNameController.text = widget.addressModel!.area ?? "";
-            cityController.text = widget.addressModel!.city ?? "";
-            addressController.text = widget.addressModel!.address ?? "";
-            city = widget.addressModel!.city;
-            locationController.text =
-            "${widget.addressModel!.address},${widget.addressModel!.area},${widget.addressModel!.city},${widget.addressModel!.state},${widget.addressModel!.pincode}";
-            _markers.clear();
-            _markers.add(Marker(
-              markerId: const MarkerId("Marker"),
-              position: latlong!,
-            ));
-          });
-        } else {
-          await updateLocationFromCoordinates(LatLng(position.latitude, position.longitude));
-          if (_controller != null) {
-            _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
-          }
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        UiUtils.setSnackBar("Location", "Failed to get location: $e", context, false, type: "2");
-        await defaultLocation();
-      }
-    }
-  }
-
-  Future<void> defaultLocation() async {
-    latlong = LatLng(
-      double.parse(context.read<SettingsCubit>().getSettings().latitude.isNotEmpty
-          ? context.read<SettingsCubit>().getSettings().latitude
-          : defaultLatitude),
-      double.parse(context.read<SettingsCubit>().getSettings().longitude.isNotEmpty
-          ? context.read<SettingsCubit>().getSettings().longitude
-          : defaultLongitude),
-    );
-    _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746);
-    await updateLocationFromCoordinates(latlong!);
-    if (_controller != null) {
-      _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
-    }
-  }
-
-  void loadSearchAddressData() {
+  loadSearchAddressData() {
     final data = searchAddressBoxData.keys.map((key) {
       final value = searchAddressBoxData.get(key);
       return {
@@ -309,11 +395,9 @@ class _AddressScreenState extends State<AddressScreen> {
         "address": value['address'],
       };
     }).toList();
-    if (mounted) {
-      setState(() {
-        searchAddressData = data.reversed.toList();
-      });
-    }
+    setState(() {
+      searchAddressData = data.reversed.toList();
+    });
   }
 
   Future<void> addSearchAddress(Map<String, dynamic> newItem) async {
@@ -321,7 +405,7 @@ class _AddressScreenState extends State<AddressScreen> {
     loadSearchAddressData();
   }
 
-  void completeAddressShow() {
+  completeAddressShow() {
     showModalBottomSheet(
       isDismissible: true,
       backgroundColor: Colors.transparent,
@@ -348,8 +432,10 @@ class _AddressScreenState extends State<AddressScreen> {
                     child: Container(
                       padding: EdgeInsets.only(top: height! / 25.0),
                       child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                        physics: AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsetsDirectional.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,15 +444,24 @@ class _AddressScreenState extends State<AddressScreen> {
                             addressField(),
                             areaRoadApartmentNameField(),
                             mobileNumberField(),
-                            alternateMobileNumberField(),
-                            landmarkField(),
+                            // REMOVED: alternateMobileNumberField(),
+                            // REMOVED: landmarkField(),
                             cityField(),
-                            if (pincode == "") pinCodeField(),
+                            // REMOVED: pinCodeField() (even conditional)
                             Padding(
-                              padding: EdgeInsetsDirectional.only(start: width! / 20.0),
+                              padding: EdgeInsetsDirectional.only(
+                                start: width! / 20.0,
+                              ),
                               child: Text(
-                                UiUtils.getTranslatedLabel(context, tagThisLocationForLaterLabel),
-                                style: const TextStyle(fontSize: 14.0, color: greayLightColor, fontWeight: FontWeight.w500),
+                                UiUtils.getTranslatedLabel(
+                                  context,
+                                  tagThisLocationForLaterLabel,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  color: greayLightColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                             tagLocation(setState),
@@ -377,10 +472,11 @@ class _AddressScreenState extends State<AddressScreen> {
                                 if (state is UpdateAddressSuccess) {
                                   context.read<AddressCubit>().editAddress(state.addressModel);
                                   Navigator.pop(context);
-                                  Future.delayed(const Duration(milliseconds: 100)).then((value) {
+                                  Future.delayed(const Duration(microseconds: 1000)).then((value) {
                                     Navigator.pop(context);
                                   });
-                                } else if (state is UpdateAddressFailure) {
+                                }
+                                if (state is UpdateAddressFailure) {
                                   if (state.errorStatusCode.toString() == "102") {
                                     reLogin(context);
                                   }
@@ -415,7 +511,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                       context.read<UpdateAddressCubit>().fetchUpdateAddress(
                                         widget.addressModel!.id!,
                                         context.read<AuthCubit>().getId(),
-                                        phoneNumberController.text,
+                                        phoneNumberController.text.toString(),
                                         addressController.text,
                                         cityController.text,
                                         latitude ?? "",
@@ -424,10 +520,10 @@ class _AddressScreenState extends State<AddressScreen> {
                                         locationStatus,
                                         context.read<AuthCubit>().getName(),
                                         countryCode.toString().replaceAll("+", ""),
-                                        alternetNumbercountryCode.toString().replaceAll("+", ""),
-                                        alternateMobileNumberController.text,
-                                        landmarkController.text,
-                                        pincode == "" ? pinCodeController.text : pincode!,
+                                        "", // alternetNumbercountryCode → empty
+                                        "", // alternateMobileNumber → empty
+                                        "", // landmark → empty
+                                        pincode ?? "", // use auto-filled or empty
                                         states ?? "",
                                         country ?? "",
                                         "0",
@@ -445,15 +541,16 @@ class _AddressScreenState extends State<AddressScreen> {
                                   if (widget.from == "login") {
                                     Navigator.pushReplacement(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                                      MaterialPageRoute(builder: (BuildContext context) => const HomeScreen()),
                                     );
                                   } else {
                                     Navigator.pop(context);
-                                    Future.delayed(const Duration(milliseconds: 100)).then((value) {
+                                    Future.delayed(const Duration(microseconds: 1000)).then((value) {
                                       Navigator.pop(context);
                                     });
                                   }
-                                } else if (state is AddAddressFailure) {
+                                }
+                                if (state is AddAddressFailure) {
                                   if (state.errorStatusCode.toString() == "102") {
                                     reLogin(context);
                                   }
@@ -487,7 +584,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                     onPressed: () {
                                       context.read<AddAddressCubit>().fetchAddAddress(
                                         context.read<AuthCubit>().getId(),
-                                        phoneNumberController.text,
+                                        phoneNumberController.text.toString(),
                                         addressController.text,
                                         cityController.text,
                                         latitude ?? "",
@@ -496,10 +593,10 @@ class _AddressScreenState extends State<AddressScreen> {
                                         locationStatus,
                                         context.read<AuthCubit>().getName(),
                                         countryCode.toString(),
-                                        alternetNumbercountryCode.toString(),
-                                        alternateMobileNumberController.text,
-                                        landmarkController.text,
-                                        pincode == "" ? pinCodeController.text : pincode!,
+                                        "", // alternetNumbercountryCode → empty
+                                        "", // alternateMobileNumber → empty
+                                        "", // landmark → empty
+                                        pincode ?? "", // use auto-filled or empty
                                         states ?? "",
                                         country ?? "",
                                         widget.from == "login" ? "1" : "0",
@@ -516,8 +613,14 @@ class _AddressScreenState extends State<AddressScreen> {
                   ),
                 ),
                 InkWell(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: SvgPicture.asset(DesignConfig.setSvgPath("cancel_icon"), width: 32, height: 32),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: SvgPicture.asset(
+                    DesignConfig.setSvgPath("cancel_icon"),
+                    width: 32,
+                    height: 32,
+                  ),
                 ),
               ],
             );
@@ -529,21 +632,18 @@ class _AddressScreenState extends State<AddressScreen> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
     _connectivitySubscription.cancel();
-    _controller?.dispose();
     locationController.dispose();
     areaRoadApartmentNameController.dispose();
     addressController.dispose();
     cityController.dispose();
-    alternateMobileNumberController.dispose();
-    pinCodeController.dispose();
-    landmarkController.dispose();
-    numberFocusNode.dispose();
-    numberFocusNodeAndroid.dispose();
-    alternetNumberFocusNode.dispose();
-    alternetNumberFocusNodeAndroid.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    phoneNumberController.dispose();
+    // Removed disposal of deleted controllers
+    _controller?.dispose();
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     super.dispose();
   }
 
@@ -561,30 +661,16 @@ class _AddressScreenState extends State<AddressScreen> {
           context,
         ),
         keyboardType: TextInputType.text,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          color: greayLightColor,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
-  Widget pinCodeField() {
-    return Container(
-      padding: EdgeInsetsDirectional.only(start: width! / 20.0, top: height! / 99.0),
-      margin: EdgeInsetsDirectional.only(bottom: height! / 40.0, end: width! / 20.0),
-      child: TextFormField(
-        controller: pinCodeController,
-        cursorColor: lightFont,
-        textInputAction: TextInputAction.done,
-        decoration: DesignConfig.inputDecorationextField(
-          UiUtils.getTranslatedLabel(context, pinCodeLabel),
-          UiUtils.getTranslatedLabel(context, enterpinCodeLabel),
-          width!,
-          context,
-        ),
-        keyboardType: TextInputType.number,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
+  // REMOVED: pinCodeField()
 
   Widget addressField() {
     return Container(
@@ -600,7 +686,11 @@ class _AddressScreenState extends State<AddressScreen> {
           context,
         ),
         keyboardType: TextInputType.text,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          color: greayLightColor,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -619,53 +709,16 @@ class _AddressScreenState extends State<AddressScreen> {
           context,
         ),
         keyboardType: TextInputType.text,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+          color: greayLightColor,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
-  Widget alternateMobileNumberField() {
-    return Container(
-      padding: EdgeInsetsDirectional.only(start: width! / 20.0, top: height! / 99.0),
-      margin: EdgeInsetsDirectional.only(bottom: height! / 80.0, end: width! / 20.0),
-      child: IntlPhoneField(
-        controller: alternateMobileNumberController,
-        textInputAction: TextInputAction.done,
-        dropdownIcon: const Icon(Icons.keyboard_arrow_down_rounded, color: black),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.surface,
-          contentPadding: const EdgeInsets.only(top: 15, bottom: 15),
-          enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: greayLightColor)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary)),
-          errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary)),
-          disabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: greayLightColor)),
-          focusColor: white,
-          counterStyle: const TextStyle(color: white, fontSize: 0),
-          border: InputBorder.none,
-          hintText: UiUtils.getTranslatedLabel(context, enterAlternateMobileNumberLabel),
-          labelStyle: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
-          hintStyle: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
-        ),
-        flagsButtonMargin: EdgeInsets.all(width! / 40.0),
-        textAlignVertical: TextAlignVertical.center,
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        focusNode: Platform.isIOS ? alternetNumberFocusNode : alternetNumberFocusNodeAndroid,
-        dropdownIconPosition: IconPosition.trailing,
-        initialCountryCode: defaulIsoCountryCode,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
-        textAlign: Directionality.of(context) == ui.TextDirection.rtl ? TextAlign.right : TextAlign.left,
-        onChanged: (phone) {
-          if (mounted) {
-            setState(() {
-              alternetNumbercountryCode = phone.countryCode;
-            });
-          }
-        },
-      ),
-    );
-  }
+  // REMOVED: alternateMobileNumberField()
 
   Widget mobileNumberField() {
     return Container(
@@ -680,8 +733,12 @@ class _AddressScreenState extends State<AddressScreen> {
           fillColor: Theme.of(context).colorScheme.surface,
           contentPadding: const EdgeInsets.only(top: 15, bottom: 15),
           enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: greayLightColor)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary)),
-          errorBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary)),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(width: 1.0, color: Theme.of(context).colorScheme.primary),
+          ),
           disabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1.0, color: greayLightColor)),
           focusColor: white,
           counterStyle: const TextStyle(color: white, fontSize: 0),
@@ -700,34 +757,15 @@ class _AddressScreenState extends State<AddressScreen> {
         style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
         textAlign: Directionality.of(context) == ui.TextDirection.rtl ? TextAlign.right : TextAlign.left,
         onChanged: (phone) {
-          if (mounted) {
-            setState(() {
-              countryCode = phone.countryCode;
-            });
-          }
+          setState(() {
+            countryCode = phone.countryCode;
+          });
         },
       ),
     );
   }
 
-  Widget landmarkField() {
-    return Container(
-      padding: EdgeInsetsDirectional.only(start: width! / 20.0, top: height! / 99.0),
-      margin: EdgeInsetsDirectional.only(bottom: height! / 40.0, end: width! / 20.0),
-      child: TextField(
-        controller: landmarkController,
-        cursorColor: greayLightColor,
-        decoration: DesignConfig.inputDecorationextField(
-          UiUtils.getTranslatedLabel(context, landmarkLabel),
-          UiUtils.getTranslatedLabel(context, enterLandmarkLabel),
-          width!,
-          context,
-        ),
-        keyboardType: TextInputType.text,
-        style: const TextStyle(color: greayLightColor, fontSize: 14.0, fontWeight: FontWeight.w500),
-      ),
-    );
-  }
+  // REMOVED: landmarkField()
 
   Widget tagLocation(StateSetter setState) {
     return Padding(
@@ -738,7 +776,11 @@ class _AddressScreenState extends State<AddressScreen> {
           Expanded(
             child: TextButton(
               style: ButtonStyle(overlayColor: WidgetStateProperty.all(Colors.transparent)),
-              onPressed: () => setState(() => locationStatus = homeKey),
+              onPressed: () {
+                setState(() {
+                  locationStatus = homeKey;
+                });
+              },
               child: Container(
                 width: width,
                 padding: EdgeInsetsDirectional.only(top: height! / 99.0, bottom: height! / 99.0),
@@ -749,7 +791,11 @@ class _AddressScreenState extends State<AddressScreen> {
                   UiUtils.getTranslatedLabel(context, homeLabel),
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  style: TextStyle(color: locationStatus == homeKey ? white : lightFont, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: locationStatus == homeKey ? white : lightFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -757,7 +803,11 @@ class _AddressScreenState extends State<AddressScreen> {
           Expanded(
             child: TextButton(
               style: ButtonStyle(overlayColor: WidgetStateProperty.all(Colors.transparent)),
-              onPressed: () => setState(() => locationStatus = officeKey),
+              onPressed: () {
+                setState(() {
+                  locationStatus = officeKey;
+                });
+              },
               child: Container(
                 width: width!,
                 padding: EdgeInsetsDirectional.only(top: height! / 99.0, bottom: height! / 99.0),
@@ -768,7 +818,11 @@ class _AddressScreenState extends State<AddressScreen> {
                   UiUtils.getTranslatedLabel(context, officeLabel),
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  style: TextStyle(color: locationStatus == officeKey ? white : lightFont, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: locationStatus == officeKey ? white : lightFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -776,7 +830,11 @@ class _AddressScreenState extends State<AddressScreen> {
           Expanded(
             child: TextButton(
               style: ButtonStyle(overlayColor: WidgetStateProperty.all(Colors.transparent)),
-              onPressed: () => setState(() => locationStatus = otherKey),
+              onPressed: () {
+                setState(() {
+                  locationStatus = otherKey;
+                });
+              },
               child: Container(
                 width: width!,
                 padding: EdgeInsetsDirectional.only(top: height! / 99.0, bottom: height! / 99.0),
@@ -787,7 +845,11 @@ class _AddressScreenState extends State<AddressScreen> {
                   UiUtils.getTranslatedLabel(context, otherLabel),
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  style: TextStyle(color: locationStatus == otherKey ? white : lightFont, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: locationStatus == otherKey ? white : lightFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -796,6 +858,8 @@ class _AddressScreenState extends State<AddressScreen> {
       ),
     );
   }
+
+  // ... rest of the file remains unchanged (locationChange, placesAutoCompleteTextField, _checkPermission, build, myMarker, getLocation)
 
   Widget locationChange() {
     return Container(
@@ -814,11 +878,18 @@ class _AddressScreenState extends State<AddressScreen> {
               children: [
                 Text(
                   city.toString(),
-                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondary, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 Text(
                   addressController.text,
-                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondary),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
                 ),
               ],
             ),
@@ -828,7 +899,7 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
-  Widget placesAutoCompleteTextField() {
+  placesAutoCompleteTextField() {
     return BlocProvider(
       create: (context) => SearchLocationCubit(AddressRepository()),
       child: BlocConsumer<SearchLocationCubit, SearchLocationState>(
@@ -838,12 +909,24 @@ class _AddressScreenState extends State<AddressScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.only(top: height! / 40.0, bottom: height! / 45.0, start: width! / 40.0, end: width! / 25.0),
+                padding: EdgeInsetsDirectional.only(
+                  top: height! / 40.0,
+                  bottom: height! / 45.0,
+                  start: width! / 40.0,
+                  end: width! / 25.0,
+                ),
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset(DesignConfig.setSvgPath("back_icon"), width: 24, height: 24, fit: BoxFit.scaleDown),
+                      onTap: () {
+                        Future.delayed(const Duration(milliseconds: 100), () => Navigator.pop(context));
+                      },
+                      child: SvgPicture.asset(
+                        DesignConfig.setSvgPath("back_icon"),
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.scaleDown,
+                      ),
                     ),
                     const SizedBox(width: 5.0),
                     Expanded(
@@ -852,33 +935,51 @@ class _AddressScreenState extends State<AddressScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5.0),
-                          border: Border.all(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.2), width: 1),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.2),
+                            width: 1,
+                          ),
                         ),
                         child: TextField(
                           controller: locationSearchController,
-                          style: TextStyle(fontSize: 16.0, color: Theme.of(context).colorScheme.onSecondary, fontWeight: FontWeight.w400),
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontWeight: FontWeight.w400,
+                          ),
                           cursorColor: Theme.of(context).colorScheme.primary,
                           cursorHeight: 20,
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(horizontal: width! / 25.0, vertical: height! / 60.0),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: width! / 25.0,
+                              vertical: height! / 60.0,
+                            ),
                             hintText: UiUtils.getTranslatedLabel(context, enterLocationAreaCityEtcLabel),
                             hintStyle: TextStyle(
                               fontSize: 16.0,
                               color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.5),
                               fontWeight: FontWeight.w400,
                             ),
-                            prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7), size: 24),
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7),
+                              size: 24,
+                            ),
                             suffixIcon: locationSearchController.text.isNotEmpty
                                 ? Container(
-                              margin: const EdgeInsets.all(8.0),
+                              margin: EdgeInsets.all(8.0),
                               child: IconButton(
-                                icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7), size: 20),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7),
+                                  size: 20,
+                                ),
                                 onPressed: () {
                                   locationSearchController.clear();
                                   FocusScope.of(context).unfocus();
                                   context.read<SearchLocationCubit>().clearResults();
-                                  if (mounted) setState(() {});
+                                  setState(() {});
                                 },
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
@@ -888,13 +989,16 @@ class _AddressScreenState extends State<AddressScreen> {
                           ),
                           onChanged: (value) {
                             if (_debounce?.isActive ?? false) _debounce!.cancel();
-                            _debounce = Timer(const Duration(milliseconds: 600), () {
-                              if (value.isNotEmpty) {
-                                context.read<SearchLocationCubit>().fetchSearchLocation(value);
-                              } else {
-                                context.read<SearchLocationCubit>().clearResults();
-                              }
-                            });
+                            _debounce = Timer(
+                              const Duration(milliseconds: 600),
+                                  () {
+                                if (value.isNotEmpty && value.length > 0) {
+                                  context.read<SearchLocationCubit>().fetchSearchLocation(value);
+                                } else {
+                                  context.read<SearchLocationCubit>().clearResults();
+                                }
+                              },
+                            );
                           },
                         ),
                       ),
@@ -907,7 +1011,9 @@ class _AddressScreenState extends State<AddressScreen> {
                   margin: const EdgeInsets.only(bottom: 8.0),
                   child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
                 ),
-              if (searchState is SearchLocationSuccess && searchState.locations.isNotEmpty && locationSearchController.text.isNotEmpty)
+              if (searchState is SearchLocationSuccess &&
+                  searchState.locations.isNotEmpty &&
+                  locationSearchController.text.isNotEmpty)
                 Container(
                   width: width,
                   margin: EdgeInsetsDirectional.only(start: width! / 20, end: width! / 20),
@@ -915,12 +1021,14 @@ class _AddressScreenState extends State<AddressScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(5.0),
-                    border: Border.all(color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.1), width: 1),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
                   ),
                   constraints: BoxConstraints(maxHeight: height! / 2),
                   child: ListView.separated(
                     shrinkWrap: true,
-                    physics: const ClampingScrollPhysics(),
                     itemCount: searchState.locations.length,
                     separatorBuilder: (context, index) => Divider(height: 1, color: Theme.of(context).colorScheme.surface),
                     itemBuilder: (context, index) {
@@ -934,10 +1042,18 @@ class _AddressScreenState extends State<AddressScreen> {
                             dense: true,
                             visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
                             contentPadding: EdgeInsets.zero,
-                            leading: Icon(Icons.location_on, color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7), size: 20.0),
+                            leading: Icon(
+                              Icons.location_on,
+                              color: Theme.of(context).colorScheme.onSecondary.withValues(alpha: 0.7),
+                              size: 20.0,
+                            ),
                             title: Text(
                               mainText,
-                              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSecondary, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.onSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -957,6 +1073,9 @@ class _AddressScreenState extends State<AddressScreen> {
                             onTap: () {
                               context.read<SearchLocationCubit>().clearResults();
                               FocusManager.instance.primaryFocus?.unfocus();
+                              Future.delayed(const Duration(milliseconds: 100), () {
+                                FocusScope.of(context).unfocus();
+                              });
                               String displayAddress = mainText;
                               if (secondaryText.isNotEmpty) {
                                 displayAddress += ", $secondaryText";
@@ -985,13 +1104,13 @@ class _AddressScreenState extends State<AddressScreen> {
                                           }
                                           if (details.addressComponents != null) {
                                             for (var component in details.addressComponents!) {
-                                              if (component.types != null &&
-                                                  component.types!.isNotEmpty &&
-                                                  component.types!.contains('locality') &&
-                                                  component.longText != null &&
-                                                  component.longText!.trim().isNotEmpty) {
-                                                city = component.longText!.trim();
-                                                break;
+                                              if (component.types != null && component.types!.isNotEmpty) {
+                                                if (component.types!.contains('locality') &&
+                                                    component.longText != null &&
+                                                    component.longText!.trim().isNotEmpty) {
+                                                  city = component.longText!.trim();
+                                                  break;
+                                                }
                                               }
                                             }
                                           }
@@ -1026,27 +1145,22 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
-  void _checkPermission(Function callback) async {
+  void _checkPermission(Function callback, BuildContext context) async {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     } else if (permission == LocationPermission.deniedForever) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => LocationDialog(width: width, height: height),
-      );
+      showDialog(context: context, barrierDismissible: false, builder: (context) => locationEnableDialog());
     } else {
-      await callback();
-      if (mounted) {
-        setState(() {
-          latlong = LatLng(position.latitude, position.longitude);
-          _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746);
-          if (_controller != null) {
-            _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
-          }
-        });
+      callback();
+      latlong = LatLng(position.latitude, position.longitude);
+      _cameraPosition = CameraPosition(target: latlong!, zoom: 14.4746, bearing: 0);
+      if (_controller != null) {
+        _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
       }
+      setState(() {
+        markerMove = false;
+      });
     }
   }
 
@@ -1059,26 +1173,30 @@ class _AddressScreenState extends State<AddressScreen> {
         : PopScope(
       canPop: false,
       onPopInvokedWithResult: (value, dynamic) {
-        Future.delayed(const Duration(milliseconds: 100)).then((value) => Navigator.pop(context));
+        Future.delayed(const Duration(microseconds: 1000)).then((value) {
+          Navigator.pop(context);
+        });
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        body: latlong == null
-            ? const Center(child: CircularProgressIndicator())
-            : Stack(
+        body: Stack(
           children: [
             SizedBox(
               height: height! / 1.27,
-              child: Stack(
+              child: (latlong != null)
+                  ? Stack(
                 children: [
                   SafeArea(
                     child: GoogleMap(
-                      markers: _markers,
-                      onCameraMove: (position) => _cameraPosition = position,
+                      onCameraMove: (position) {
+                        _cameraPosition = position;
+                      },
                       onCameraIdle: () {
-                        if (latlong != _cameraPosition.target) {
-                          latlong = _cameraPosition.target;
-                          updateLocationFromCoordinates(latlong!);
+                        if (markerMove == false) {
+                          if (latlong == LatLng(_cameraPosition.target.latitude, _cameraPosition.target.longitude)) {
+                          } else {
+                            getLocation();
+                          }
                         }
                       },
                       zoomControlsEnabled: false,
@@ -1089,40 +1207,70 @@ class _AddressScreenState extends State<AddressScreen> {
                       myLocationButtonEnabled: false,
                       mapType: MapType.normal,
                       initialCameraPosition: _cameraPosition,
-                      gestureRecognizers: {
-                        Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
-                        Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-                        Factory<TapGestureRecognizer>(() => TapGestureRecognizer()),
-                        Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer()),
-                      },
+                      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{}
+                        ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()..onUpdate = (dragUpdateDetails) {}))
+                        ..add(Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()..onStart = (dragUpdateDetails) {}))
+                        ..add(Factory<TapGestureRecognizer>(() => TapGestureRecognizer()))
+                        ..add(Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer()
+                          ..onDown = (dragUpdateDetails) {
+                            if (markerMove == false) {
+                            } else {
+                              setState(() {
+                                markerMove = false;
+                              });
+                            }
+                          })),
                       onMapCreated: (GoogleMapController controller) {
-                        _controller = controller;
-                        _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          _controller = controller;
+                          _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+                        });
                       },
                       onTap: (latLng) {
-                        _controller?.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+                        _controller!.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+                        if (markerMove == false) {
+                        } else {
+                          setState(() {
+                            markerMove = false;
+                          });
+                        }
                       },
                     ),
                   ),
                   PinAnimation(color: Theme.of(context).colorScheme.primary),
-                  Center(child: SvgPicture.asset(DesignConfig.setSvgPath('other_address'), width: 35, height: 35)),
+                  Center(
+                    child: SvgPicture.asset(
+                      DesignConfig.setSvgPath('other_address'),
+                      width: 35,
+                      height: 35,
+                    ),
+                  ),
                   Positioned.directional(
                     textDirection: Directionality.of(context),
                     end: width! / 90.0,
                     top: height! / 1.6,
                     child: InkWell(
-                      onTap: () => _checkPermission(() async => await getUserLocation()),
+                      onTap: () => _checkPermission(() async {}, context),
                       child: Container(
                         width: 50,
                         height: 50,
                         margin: const EdgeInsetsDirectional.only(end: 10),
-                        decoration: DesignConfig.boxDecorationContainerBorder(lightFont, Theme.of(context).colorScheme.onSurface, 10.0),
-                        child: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary, size: 35),
+                        decoration: DesignConfig.boxDecorationContainerBorder(
+                          lightFont,
+                          Theme.of(context).colorScheme.onSurface,
+                          10.0,
+                        ),
+                        child: Icon(
+                          Icons.my_location,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 35,
+                        ),
                       ),
                     ),
                   ),
                 ],
-              ),
+              )
+                  : MapLoadSimmer(width: width!, height: height!),
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -1133,7 +1281,8 @@ class _AddressScreenState extends State<AddressScreen> {
                 child: Container(
                   margin: EdgeInsetsDirectional.only(top: height! / 30.0),
                   child: SingleChildScrollView(
-                    child: Column(
+                    child: latlong != null
+                        ? Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1141,17 +1290,33 @@ class _AddressScreenState extends State<AddressScreen> {
                           padding: EdgeInsetsDirectional.only(start: width! / 20.0),
                           child: Text(
                             UiUtils.getTranslatedLabel(context, selectDeliveryLocationLabel),
-                            style: TextStyle(fontSize: 16.0, color: Theme.of(context).colorScheme.onSecondary, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.only(top: height! / 60.0, bottom: height! / 40.0),
-                          child: Divider(color: lightFont.withValues(alpha: 0.10), height: 0.2, thickness: 0.2, endIndent: width! / 20.0, indent: width! / 20.0),
+                          child: Divider(
+                            color: lightFont.withValues(alpha: 0.10),
+                            height: 0.2,
+                            thickness: 0.2,
+                            endIndent: width! / 20.0,
+                            indent: width! / 20.0,
+                          ),
                         ),
                         locationChange(),
                         Padding(
                           padding: EdgeInsetsDirectional.only(top: height! / 99.0, bottom: height! / 40.0),
-                          child: Divider(color: lightFont.withValues(alpha: 0.10), height: 0.2, thickness: 0.2, endIndent: width! / 20.0, indent: width! / 20.0),
+                          child: Divider(
+                            color: lightFont.withValues(alpha: 0.10),
+                            height: 0.2,
+                            thickness: 0.2,
+                            endIndent: width! / 20.0,
+                            indent: width! / 20.0,
+                          ),
                         ),
                         SizedBox(
                           width: width!,
@@ -1171,7 +1336,7 @@ class _AddressScreenState extends State<AddressScreen> {
                             textColor: white,
                             onPressed: () {
                               if (widget.from == "location" || widget.from == "change") {
-                                if (city == null || city!.isEmpty) {
+                                if (city == "") {
                                   UiUtils.setSnackBar(
                                     UiUtils.getTranslatedLabel(context, addressLabel),
                                     StringsRes.sorryWeAreNotDeliveryFoodOnCurrentLocation,
@@ -1185,25 +1350,37 @@ class _AddressScreenState extends State<AddressScreen> {
                                       if (context.read<SystemConfigCubit>().getDemoMode() == "0") {
                                         demoModeAddressDefault(context, "1");
                                       } else {
-                                        setAddressForDisplayData(context, "1", city.toString(), latitude!, longitude!, address.toString());
+                                        setAddressForDisplayData(
+                                          context,
+                                          "1",
+                                          city.toString(),
+                                          latitude!.toString(),
+                                          longitude!.toString(),
+                                          address.toString(),
+                                        );
                                       }
-                                      addSearchAddress({
-                                        "city": city.toString(),
-                                        "latitude": latitude.toString(),
-                                        "longitude": longitude.toString(),
-                                        "address": address.toString(),
-                                      }).then((value) {
-                                        if (widget.from == "location") {
-                                          context.read<SettingsCubit>().changeShowSkip();
-                                          Navigator.of(context).pushNamedAndRemoveUntil(Routes.home, (Route<dynamic> route) => false);
-                                        } else if (widget.from == "change") {
-                                          Navigator.of(context).pop();
-                                          Future.delayed(const Duration(milliseconds: 300), () {
-                                            Navigator.of(context).pushReplacementNamed(Routes.home);
-                                          });
-                                        } else {
-                                          Navigator.pop(context);
-                                        }
+                                      Future.delayed(Duration.zero, () {
+                                        addSearchAddress({
+                                          "city": city.toString(),
+                                          "latitude": latitude.toString(),
+                                          "longitude": longitude.toString(),
+                                          "address": address.toString(),
+                                        }).then((value) {
+                                          if (widget.from == "location") {
+                                            context.read<SettingsCubit>().changeShowSkip();
+                                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                              Routes.home,
+                                                  (Route<dynamic> route) => false,
+                                            );
+                                          } else if (widget.from == "change") {
+                                            Navigator.of(context).pop();
+                                            Future.delayed(const Duration(milliseconds: 300), () {
+                                              Navigator.of(context).pushReplacementNamed(Routes.home);
+                                            });
+                                          } else {
+                                            Navigator.pop(context);
+                                          }
+                                        });
                                       });
                                     });
                                   }
@@ -1215,7 +1392,8 @@ class _AddressScreenState extends State<AddressScreen> {
                           ),
                         ),
                       ],
-                    ),
+                    )
+                        : MapDataLoadSimmer(width: width!, height: height!),
                   ),
                 ),
               ),
@@ -1235,5 +1413,48 @@ class _AddressScreenState extends State<AddressScreen> {
         ),
       ),
     );
+  }
+
+  Set<Marker> myMarker() {
+    _markers.clear();
+    _markers.add(
+      Marker(
+        onDrag: (value) {
+          print("on:Drag");
+        },
+        onDragStart: (value) {
+          print("on:DragStart");
+        },
+        onDragEnd: (value) {
+          print("onDragEnd");
+        },
+        markerId: MarkerId(Random().nextInt(10000).toString()),
+        visible: false,
+        position: LatLng(latlong!.latitude, latlong!.longitude),
+        draggable: true,
+      ),
+    );
+    return _markers;
+  }
+
+  Future<void> getLocation() async {
+    print("center:${latlong!.latitude}-${latlong!.longitude}");
+    latlong = LatLng(_cameraPosition.target.latitude, _cameraPosition.target.longitude);
+    final placemarks = await geocoder.findAddressesFromCoordinates(
+      Coordinates(latlong!.latitude, latlong!.longitude),
+    );
+    states = placemarks.first.adminArea ?? "";
+    country = placemarks.first.countryName ?? "";
+    pincode = placemarks.first.postalCode ?? "";
+    latitude = latlong!.latitude.toString();
+    longitude = latlong!.longitude.toString();
+    area = placemarks.first.subLocality ?? "";
+    areaRoadApartmentNameController.text = placemarks.first.subLocality ?? "";
+    address = placemarks.first.addressLine ?? "";
+    addressController = TextEditingController(text: placemarks.first.addressLine.toString());
+    city = placemarks.first.locality ?? placemarks.first.subAdminArea!;
+    cityController.text = placemarks.first.locality ?? placemarks.first.subAdminArea!;
+    locationController.text = placemarks.first.addressLine.toString();
+    if (mounted) setState(() {});
   }
 }

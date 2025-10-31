@@ -3151,7 +3151,7 @@ class CartScreenState extends State<CartScreen> {
                                                 }
                                               }
                                               if (state is DeliveryChargeSuccess) {
-                                                deliveryCharge = double.parse(state.isFreeDelivery == "1" ? "0.0" : state.delivaryCharge.toString());
+                                                deliveryCharge = double.parse(state.isFreeDelivery == "1" ? "0.0" : state.deliveryCharge.toString());
                                                 if (promoAmt == 0) {
                                                   if (orderTypeIndex.toString() == "0") {
                                                     finalTotal = cartList.overallAmount! + deliveryCharge;
@@ -3165,7 +3165,7 @@ class CartScreenState extends State<CartScreen> {
                                               print("${state.toString()}-$deliveryCharge");
 
                                               if (state is DeliveryChargeSuccess) {
-                                                deliveryCharge = double.parse(state.isFreeDelivery == "1" ? "0.0" : state.delivaryCharge.toString());
+                                                deliveryCharge = double.parse(state.isFreeDelivery == "1" ? "0.0" : state.deliveryCharge.toString());
                                                 if (orderTypeIndex.toString() == "0") {
                                                   print("$subTotal=$deliveryCharge");
 
@@ -3200,7 +3200,7 @@ class CartScreenState extends State<CartScreen> {
                                                             ],
                                                           ),
                                                           const Spacer(),
-                                                          Text("${context.read<SystemConfigCubit>().getCurrency()}${state.delivaryCharge.toString()}",
+                                                          Text("${context.read<SystemConfigCubit>().getCurrency()}${state.deliveryCharge.toString()}",
                                                               textAlign: TextAlign.end,
                                                               style: TextStyle(
                                                                 color: Theme.of(context).colorScheme.primary,

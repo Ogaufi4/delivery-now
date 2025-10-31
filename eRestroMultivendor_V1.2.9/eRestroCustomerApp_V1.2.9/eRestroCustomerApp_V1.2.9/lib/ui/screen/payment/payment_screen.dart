@@ -947,7 +947,7 @@ class PaymentScreenState extends State<PaymentScreen> {
     finalTotal = 0;
     subTotal = 0;
     taxPercentage = 0;
-    deliveryCharge = 0;
+    deliveryCharge = 10;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
 
     promoAmt = 0;

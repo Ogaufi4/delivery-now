@@ -203,7 +203,7 @@ reLogin(BuildContext context) {
 
 clearAll() {
   taxPercentage = 0;
-  deliveryCharge = 0;
+  deliveryCharge = 10;
   deliveryTip = 0;
   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
 

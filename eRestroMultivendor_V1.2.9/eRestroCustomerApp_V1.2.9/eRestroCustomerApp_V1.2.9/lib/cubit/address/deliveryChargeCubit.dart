@@ -9,9 +9,9 @@ class DeliveryChargeInitial extends DeliveryChargeState {}
 class DeliveryChargeProgress extends DeliveryChargeState {}
 
 class DeliveryChargeSuccess extends DeliveryChargeState {
-  final String? userId, addressId, delivaryCharge, isFreeDelivery;
+  final String? userId, addressId, deliveryCharge, isFreeDelivery;
 
-  DeliveryChargeSuccess(this.userId, this.addressId, this.delivaryCharge, this.isFreeDelivery);
+  DeliveryChargeSuccess(this.userId, this.addressId, this.deliveryCharge, this.isFreeDelivery);
 }
 
 class DeliveryChargeFailure extends DeliveryChargeState {
@@ -38,7 +38,7 @@ class DeliveryChargeCubit extends Cubit<DeliveryChargeState> {
 
   String getDeliveryCharge() {
     if (state is DeliveryChargeSuccess) {
-      return (state as DeliveryChargeSuccess).delivaryCharge!;
+      return (state as DeliveryChargeSuccess).deliveryCharge!;
     }
     return "";
   }
